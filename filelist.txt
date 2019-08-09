@@ -1,0 +1,85 @@
+26_add_16b_carry.asm	
+27_add_16b_bcd.asm	
+28_multiply_2_32b.asm	
+36_daa.asm	
+add_in_memory.asm	
+multiply_in_memory.asm	
+15_Sum_of_n_8b.asm	
+16_print_array.asm	
+17_add_8b_16b.asm	
+18_add_8b_2.asm	
+19_sub_8b.asm	
+20_lea.asm	
+21_offset.asm	
+22_count_1s.asm	
+23_find_largest.asm	
+24_multiply_8b.asm	
+25_divide_16b_by_8b.asm	
+34_copy_string_instruction.asm	
+34_copy_without_string_instruction.asm	
+compare_strings.asm	
+decimal_to_binary.asm	
+decimal_to_octal.asm	
+hex_to_decimal.asm	
+reverse_number.asm	
+31_hex_bcd.asm	
+32_bcd_hex.asm	
+33_seven_segment.asm	
+check_number_even_odd.asm	
+concatenation_string.asm	
+copy_string_memory_location.asm	
+count_vowels.asm	
+count_words.asm	
+fibonacci.asm	
+fibonacci2.asm	
+fibonacci3.asm	
+finding_largest_number_memory.asm	
+given_number_prime.asm	
+power.asm	
+prompt_user_array+display.asm	
+reverse_array.asm	
+substring_in_string.asm	
+29_gcd_two.asm	
+30_sum_average_unsigned.asm	
+31_fact.asm	
+average_sum_array.asm	
+occurences_character_count.asm	
+search_element_array.asm	
+36_binary_search.asm	
+linear_search.asm	
+array_ascending.asm	
+array_descending.asm	
+35_bubble_sort.asm	
+ADDING ELEMENTS IN ARRAY.asm	
+array.asm	
+DISPLAY DATE AND TIME.asm	
+DISPLAYING HELLO.asm	
+displaying.asm	
+Displaying_patterns_of_lab_three.asm	
+exmpl_6point1.asm	
+exmpl_6point2.asm	
+exmpl_6point3.asm	
+exmpl_6point8.asm	
+exrcise_1.asm	
+exrcise_1b.asm	
+INVERSING A GIVEN STRING.asm	
+LOGICAL INS.asm	
+LOWERCASE TO UPPERCASE.asm	
+SHL command.asm	
+taking input and displaying.asm	
+TAKING INPUT AND REVERSE IT.asm	
+testing if AL contains even or odd number.asm	
+1.array_sum.asm	
+2.linear_search.asm	
+3.binary_search.asm	
+4a.unpack_to_pack_mask.asm	
+4b.unpack_to_pack_rotate.asm	
+4c.unpack_to_pack_shift.asm	
+5a.pack_to_unpack_mask.asm	
+5b.pack_to_unpack_rotate.asm	
+5c.pack_to_unpack_shift.asm	
+6.transfer_data.asm	
+7.matrix_addition.asm	
+8.matrix_multiplication.asm	
+9.factorial.asm	
+10.table_of_parameters.asm
