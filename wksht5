@@ -1,0 +1,21 @@
+DEPARTMENT OF APPLIED MATHEMATICS AND COMPUTATIONAL SCIENCES
+MSc Theoretical Computer Science(III Sem 2019-20)
+18XT38 – Assembly Language Programming
+PROBLEM SHEET 5
+1. Write an ALP to convert a string in lower case letter to a string in UPPER CASE and
+print it on the screen.
+2. Write an 8086 ALP to compare two strings without using string instructions and display
+appropriate messages.
+3. Write an ALP to count the number of vowels in a given string.
+4. Write an ALP to compare two strings that are stored in memory in different locations
+and display the result of comparison in memory location 5200 as „Y‟ or „N.‟
+5. Write a program in 8086 Assembly language to convert all upper case letters to lower
+case and vice versa. Also the first character in each word should have the word count( in
+number) prefixed.
+For example ,the sentence “ this is MY FIRST ALP lab” shall be converted into “1.THIS
+2. IS 3.my 4.first 5. alp 6. LAB”
+6. Write a ALP that behaves like strcpy except it copies a maximum of n characters
+(including the zero terminating byte). Pass the source string‟s address in es:di, the
+destination string‟s address in dx:si, and the maximum length in cx.
+7. .Write an ALP to parse a typical scanf statement in C language for eg.,…scanf(“%d
+%d”, &a, &b) and validate the statement.
