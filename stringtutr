@@ -1,0 +1,282 @@
+We have already used variable length strings in our previous examples. The
+variable length strings can have as many characters as required. Generally, we
+specify the length of the string by either of the two ways:
+ Explicitly storing string length
+ Using a sentinel character
+We can store the string length explicitly by using the $ location counter symbol
+that represents the current value of the location counter. In the following
+example:
+msg db 'Hello, world!',0xa ;our dear string
+len equ $ - msg ;length of our dear string
+$ points to the byte after the last character of the string variable msg.
+Therefore, $-msg gives the length of the string. We can also write
+msg db 'Hello, world!',0xa ;our dear string
+len equ 13 ;length of our dear string
+Alternatively, you can store strings with a trailing sentinel character to delimit a
+string instead of storing the string length explicitly. The sentinel character
+should be a special character that does not appear within a string.
+For example:
+message DB 'I am loving it!', 0
+String Instructions
+Each string instruction may require a source operand, a destination operand or
+both. For 32-bit segments, string instructions use ESI and EDI registers to point
+to the source and destination operands, respectively.
+For 16-bit segments, however, the SI and the DI registers are used to point to
+the source and destination, respectively.
+There are five basic instructions for processing strings. They are:
+ MOVS - This instruction moves 1 Byte, Word or Doubleword of data from
+memory location to another.
+15. STRINGS 
+Assembly Programming
+66
+ LODS - This instruction loads from memory. If the operand is of one byte,
+it is loaded into the AL register, if the operand is one word, it is loaded
+into the AX register and a doubleword is loaded into the EAX register.
+ STOS - This instruction stores data from register (AL, AX, or EAX) to
+memory.
+ CMPS - This instruction compares two data items in memory. Data could
+be of a byte size, word or doubleword.
+ SCAS - This instruction compares the contents of a register (AL, AX or
+EAX) with the contents of an item in memory.
+Each of the above instruction has a byte, word, and doubleword version; and
+string instructions can be repeated by using a repetition prefix.
+These instructions use the ES:DI and DS:SI pair of registers, where DI and SI
+registers contain valid offset addresses that refers to bytes stored in memory. SI
+is normally associated with DS (data segment) and DI is always associated with
+ES (extra segment).
+The DS:SI (or ESI) and ES:DI (or EDI) registers point to the source and
+destination operands, respectively. The source operand is assumed to be at
+DS:SI (or ESI) and the destination operand at ES:DI (or EDI) in memory.
+For 16-bit addresses, the SI and DI registers are used, and for 32-bit addresses,
+the ESI and EDI registers are used.
+The following table provides various versions of string instructions and the
+assumed space of the operands.
+Basic
+Instruction
+Operands
+at
+Byte
+Operation
+Word
+Operation
+Double word
+Operation
+MOVS ES:DI,
+DS:EI
+MOVSB MOVSW MOVSD
+LODS AX, DS:SI LODSB LODSW LODSD
+STOS ES:DI, AX STOSB STOSW STOSD
+CMPS DS:SI, ES:
+DI
+CMPSB CMPSW CMPSD
+SCAS ES:DI, AX SCASB SCASW SCASD
+Assembly Programming
+67
+MOVS
+The MOVS instruction is used to copy a data item (byte, word or doubleword)
+from the source string to the destination string. The source string is pointed by
+DS:SI and the destination string is pointed by ES:DI.
+The following example explains the concept:
+section .text
+ global _start ;must be declared for using gcc
+_start: ;tell linker entry point
+mov ecx, len
+mov esi, s1
+mov edi, s2
+cld
+rep movsb
+mov edx,20 ;message length
+mov ecx,s2;message to write
+mov ebx,1 ;file descriptor (stdout)
+mov eax,4 ;system call number (sys_write)
+int 0x80 ;call kernel
+mov eax,1 ;system call number (sys_exit)
+int 0x80 ;call kernel
+section .data
+s1 db 'Hello, world!',0 ;string 1
+len equ $-s1
+section .bss
+s2 resb 20 ;destination
+When the above code is compiled and executed, it produces the following result:
+Hello, world!
+Assembly Programming
+68
+LODS
+In cryptography, a Caesar cipher is one of the simplest known encryption
+techniques. In this method, each letter in the data to be encrypted is replaced
+by a letter some fixed number of positions down the alphabet.
+In this example, let us encrypt a data by simply replacing each alphabet in it
+with a shift of two alphabets, so a will be substituted by c, b with d and so on.
+We use LODS to load the original string 'password' into the memory.
+section .text
+ global _start ;must be declared for using gcc
+_start: ;tell linker entry point
+ mov ecx, len
+ mov esi, s1
+ mov edi, s2
+loop_here:
+ lodsb
+ add al, 02
+ stosb
+ loop loop_here
+ cld
+ rep movsb
+ mov edx,20 ;message length
+ mov ecx,s2 ;message to write
+ mov ebx,1 ;file descriptor (stdout)
+ mov eax,4 ;system call number (sys_write)
+ int 0x80 ;call kernel
+ mov eax,1 ;system call number (sys_exit)
+ int 0x80 ;call kernel
+section .data
+s1 db 'password', 0 ;source
+len equ $-s1
+section .bss
+Assembly Programming
+69
+s2 resb 10 ;destination
+When the above code is compiled and executed, it produces the following result:
+rcuuyqtf
+STOS
+The STOS instruction copies the data item from AL (for bytes - STOSB), AX (for
+words - STOSW) or EAX (for doublewords - STOSD) to the destination string,
+pointed to by ES:DI in memory.
+The following example demonstrates use of the LODS and STOS instruction to
+convert an upper case string to its lower case value:
+section .text
+ global _start ;must be declared for using gcc
+_start: ;tell linker entry point
+ mov ecx, len
+ mov esi, s1
+ mov edi, s2
+loop_here:
+lodsb
+or al, 20h
+stosb
+loop loop_here
+cld
+rep movsb
+mov edx,20 ;message length
+mov ecx,s2;message to write
+mov ebx,1 ;file descriptor (stdout)
+mov eax,4 ;system call number (sys_write)
+int 0x80 ;call kernel
+mov eax,1 ;system call number (sys_exit)
+int 0x80 ;call kernel
+section .data
+Assembly Programming
+70
+s1 db 'HELLO, WORLD', 0 ;source
+len equ $-s1
+section .bss
+s2 resb 20 ;destination
+When the above code is compiled and executed, it produces the following result:
+hello, world
+CMPS
+The CMPS instruction compares two strings. This instruction compares two data
+items of one byte, word or doubleword, pointed to by the DS:SI and ES:DI
+registers and sets the flags accordingly. You can also use the conditional jump
+instructions along with this instruction.
+The following example demonstrates comparing two strings using the CMPS
+instruction:
+section .text
+ global _start ;must be declared for using gcc
+_start: ;tell linker entry point
+ mov esi, s1
+ mov edi, s2
+ mov ecx, lens2
+ cld
+ repe cmpsb
+ jecxz equal ;jump when ecx is zero
+ ;If not equal then the following code
+ mov eax, 4
+ mov ebx, 1
+ mov ecx, msg_neq
+ mov edx, len_neq
+ int 80h
+ jmp exit
+equal:
+Assembly Programming
+71
+ mov eax, 4
+ mov ebx, 1
+ mov ecx, msg_eq
+ mov edx, len_eq
+ int 80h
+exit:
+ mov eax, 1
+ mov ebx, 0
+ int 80h
+section .data
+s1 db 'Hello, world!',0 ;our first string
+lens1 equ $-s1
+s2 db 'Hello, there!', 0 ;our second string
+lens2 equ $-s2
+msg_eq db 'Strings are equal!', 0xa
+len_eq equ $-msg_eq
+msg_neq db 'Strings are not equal!'
+len_neq equ $-msg_neq
+When the above code is compiled and executed, it produces the following result:
+Strings are not equal!
+SCAS
+The SCAS instruction is used for searching a particular character or set of
+characters in a string. The data item to be searched should be in AL (for
+SCASB), AX (for SCASW) or EAX (for SCASD) registers. The string to be
+searched should be in memory and pointed by the ES:DI (or EDI) register.
+Look at the following program to understand the concept:
+section .text
+ global _start ;must be declared for using gcc
+_start: ;tell linker entry point
+Assembly Programming
+72
+ mov ecx,len
+ mov edi,my_string
+ mov al , 'e'
+ cld
+ repne scasb
+ je found ; when found
+ ; If not not then the following code
+ mov eax,4
+ mov ebx,1
+ mov ecx,msg_notfound
+ mov edx,len_notfound
+ int 80h
+ jmp exit
+found:
+ mov eax,4
+ mov ebx,1
+ mov ecx,msg_found
+ mov edx,len_found
+ int 80h
+exit:
+ mov eax,1
+ mov ebx,0
+ int 80h
+section .data
+my_string db 'hello world', 0
+len equ $-my_string
+msg_found db 'found!', 0xa
+len_found equ $-msg_found
+msg_notfound db 'not found!'
+len_notfound equ $-msg_notfound 
+Assembly Programming
+73
+When the above code is compiled and executed, it produces the following result:
+found!
+Repetition Prefixes
+The REP prefix, when set before a string instruction, for example - REP MOVSB,
+causes repetition of the instruction based on a counter placed at the CX register.
+REP executes the instruction, decreases CX by 1, and checks whether CX is zero.
+It repeats the instruction processing until CX is zero.
+The Direction Flag (DF) determines the direction of the operation.
+ Use CLD (Clear Direction Flag, DF = 0) to make the operation left to right.
+ Use STD (Set Direction Flag, DF = 1) to make the operation right to left.
+The REP prefix also has the following variations:
+ REP: It is the unconditional repeat. It repeats the operation until CX is
+zero.
+ REPE or REPZ: It is conditional repeat. It repeats the operation while the
+zero flag indicates equal/zero. It stops when the ZF indicates not
+equal/zero or when CX is zero.
+ REPNE or REPNZ: It is also conditional repeat. It repeats the operation
+while the zero flag indicates not equal/zero. It stops when the ZF indicates
+equal/zero or when CX is decremented to zero.
