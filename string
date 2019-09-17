@@ -1,0 +1,550 @@
+include emu8086.inc
+org 100h
+mov ah,0ah
+mov dx,offset str1
+int 21h
+mov dx,offset str2
+int 21h
+mov si,offset p2
+mov al,str1[1]
+cmp al,str2[1]
+jne l2
+mov cl,str2[1]
+mov bx,2
+lab:
+    mov al,str1[bx]
+    cmp al,str2[bx]
+    jne l2:
+    inc bx
+    dec cx
+    jnz lab
+l2:
+    cmp cx,0
+    je l3:
+    mov si,offset p2
+    jmp l4
+l3:
+    mov si,offset p1
+l4:
+    call print_string
+    
+ret 
+
+str1 db 20,?,20 dup(' ')
+str2 db 20,?,20 dup(' ')
+p1 db 'Equal',0
+p2 db 'Not Equal',0
+define_print_string
+end
+
+
+--------------------------------
+
+include emu8086.inc
+org 100h
+mov si,offset p1
+call print_string
+mov ah,0ah
+mov dx,offset str
+int 21h
+mov bx,2
+mov cl,str[1]
+mov dx,0
+l1:
+    call check_vowel
+    inc bx
+    loop l1   
+mov ax,dx
+call print_num
+    
+ret
+
+vow db 'aeiou',0
+str db 20,?,20 dup(' ')    
+p1 db 'Enter A Strng : ',0
+    
+proc check_vowel
+    mov si,0
+    l4: 
+        mov al,vow[si]
+        cmp str[bx],al
+        jne l5
+        inc dx
+        ret
+        l5:
+            inc si
+            cmp si,5
+            jnz l4
+    ret
+endp check_vowel  
+
+define_print_string 
+define_print_num
+define_print_num_uns
+end
+        
+    
+-------------------------------
+
+org 100h
+mov si,-1
+mov bx,0 
+lab:
+    inc si 
+    mov al,0          
+    add al,i
+    inc i
+    mov res[bx],al
+    inc bx
+    mov res[bx],46
+    inc bx
+    mov res[bx],32
+    inc bx
+    l2: 
+        cmp str[si],32
+        je lab
+        mov al,str[si]
+        call type
+        mov res[bx],al
+        inc si
+        inc bx
+        cmp si,24
+        je l3
+        jmp l2
+l3:
+mov ax,offset res 
+    
+    
+ret
+
+str db 'this is MY FIRST ALP lab'
+res db 35 dup(?)            ;Size 35
+i db 48                     ;Ascii Value of 0
+
+proc type                   ;Procedure to convert ltou and utol
+    cmp al,97
+    jge l6
+    jle l7
+    l6:
+        cmp al,122
+        jle l8
+        jmp l10
+    l8:
+        sub al,20h
+        jmp l10
+    l7:
+        cmp al,65
+        jge l9
+        jmp l10
+    l9:
+        add al,20h
+    l10:
+ret
+endp type
+    
+ 
+--------------------------------------------
+
+include emu8086.inc
+org 100h  
+mov si,offset prompt    ;Printing Prompt Message
+call print_string 
+
+mov dx,offset src          ;Getting Input
+mov ah,0ah
+int 21h
+mov cx,0
+mov cl,src[1]
+mov bx,0     
+                           ;Copying to Extra Segment
+l1:     
+    mov al,src[bx+2]
+    mov es:[3200h+bx],al
+    inc bx
+    loop l1
+    
+mov bx,0
+mov di,3200h
+mov si,offset des
+call strcpy
+  
+ret
+
+src db 30,?,30 dup(?)
+des db 30 dup(?)
+prompt db 'Enter a String : ',0
+proc strcpy
+    mov bx,0
+    lab:
+        mov al,es:[di+bx]
+        mov ds:[si+bx],al
+        inc bx
+        cmp es:[di+bx],0
+        jnz lab
+ret
+endp strcpy
+      
+
+define_print_string
+end
+
+
+-----------------------------------------------
+
+
+include emu8086.inc
+org 100h  
+mov si,offset prompt        ;Printing Prompt Message
+call print_string 
+
+mov dx,offset src           ;Getting Input
+mov ah,0ah
+int 21h
+mov cx,0
+mov cl,src[1]
+mov bx,0     
+                           
+l1:     
+    mov al,src[bx+2]
+    mov es:[3200h+bx],al
+    inc bx
+    loop l1
+mov es:[3200+bx],0
+
+mov si,offset prompt        ;Printing Prompt Message
+call print_string
+    
+mov dx,offset src1           ;Getting Input
+mov ah,0ah
+int 21h
+mov cx,0
+mov cl,src1[1]
+mov bx,0
+    
+l2:  
+    mov al,src1[bx+2]
+    mov [3400h+bx],al
+    inc bx
+    loop l2
+mov [3400+bx],0
+    
+    
+mov bx,0
+mov di,3200h
+mov si,3400h
+call strcmp
+  
+ret
+
+src db 30,?,30 dup(?)
+src1 db 30,?,30 dup(?)
+prompt db 'Enter a String : ',
+
+
+
+proc strcmp
+    mov bx,0
+    mov al,'Y'
+    mov ds:[5200h],al
+    
+    lab:
+        mov al,es:[di+bx]
+        cmp ds:[si+bx],al
+        jne l4
+        jmp l5
+        l4:
+            mov al,'N'
+            mov ds:[5200h],al
+            jmp l6 
+        l5:
+        inc bx
+        cmp es:[di+bx],0
+        jnz lab
+l6:
+ret
+endp strcmp
+      
+
+define_print_string
+end
+
+
+------------------------------------------------
+
+
+
+include emu8086.inc
+org 100h
+;Interactive Message
+mov si,offset prompt1
+call print_string
+
+;Getting input
+mov dx,offset ip
+mov ah,0ah
+int 21h
+
+mov si,2
+A5:
+   mov al,ip[si]
+   mov temp[si-2],al
+   inc si
+   cmp si,8
+   jnz A5
+   
+call strcmp
+;1st Exit Condn
+cmp dh,0
+je exit 
+
+;2nd Exit Condn
+mov al,ip[si]
+cmp al,22h              ;22h - Ascii of "
+jne exit
+inc si
+
+A6:
+    mov al,ip[si]
+    inc si
+    cmp al,22h
+    je A11
+    cmp al,25h          ;Checking if it is %
+    je ac
+    cmp al,20h          ;Checking if it is  space
+    je A6
+    ac:
+        mov ah,n
+        inc ah
+        mov n,ah
+        mov bx,0
+    A7:
+        mov al,ip[si]
+        mov temp[bx],al
+        inc si
+        inc bx
+        mov al,ip[si]
+        ;When found %  or ' '
+        cmp al,25h
+        je A8
+        cmp al,20h
+        je A8 
+        cmp al,22h
+        je A8
+        jmp A7
+        
+        A8: 
+            
+            cmp bx,1
+            jne A9
+            call check1 
+            cmp dh,1
+            jne exit   
+            jmp A6
+            
+            A9:
+                cmp bx,2
+                jne exit
+                call check2    
+                cmp dh,1
+                jne exit
+                jmp A6
+                
+                    
+        
+A11: 
+    mov al,ip[si]
+    inc si
+    cmp al,41
+    je A12
+    cmp al,44
+    jne A11
+    call check_ca            
+    cmp dh,1
+    jne exit
+    inc m
+    mov al,ip[si]
+    ;Exit if , or & found after ,&
+    cmp al,38
+    je exit  
+    cmp al,44
+    je exit
+    jmp A11
+
+mov al,n
+cmp al,m
+je A12 
+    
+
+exit:
+    mov si,offset prompt2
+    call print_string
+    ret 
+A12:
+    mov al,ip[si]
+    cmp al,59
+    jne exit
+    mov si,offset prompt3
+    call print_string
+    
+ret     
+
+sp1  db 'cdeEfgGilosuxX',0    
+sp2 db 'huhildlilfLflu',0
+prompt1 db 'Enter Scan Statement : ',0
+prompt2 db 'Syntax Error ....',0
+prompt3 db 'Syntax Correct ',2,0
+str1 db 'scanf('
+var dw ?    
+ip db 100,?,100 dup(?)
+n db 0
+m db 0 
+temp db 7 dup(?)
+
+proc check1
+    mov var,si 
+    mov dh,0
+    mov al,temp[0]
+    mov si,0
+    A1:
+       cmp al,sp1[si]
+       jne A2
+       mov dh,1
+       mov si,var                 ;Dh is used like flag to check whether type specifier exists or not 
+       ret
+       A2:
+            inc si
+            cmp si,14
+    jnz A1
+    mov si,var
+ret
+endp check1
+
+
+proc check2 
+    mov dh,0
+    mov var,si
+    mov ah,temp[0]
+    mov al,temp[1]
+    mov si,0
+    A3:
+        mov bh,sp2[si]
+        mov bl,sp2[si+1] 
+        cmp ax,bx
+        jne A4
+        mov dh,1
+        mov si,var                ;Dh is used like flag to check whether type specifier exists or not 
+        ret
+        A4: 
+            add si,2
+        cmp si,14
+        jnz A3
+        mov si,var
+ret 
+endp check2
+
+proc strcmp
+    mov bx,0
+    mov dh,1
+    lab:
+        mov al,str1[bx]
+        cmp al,temp[bx]
+        jne l4
+        jmp l5
+        l4:
+            mov dh,0            ;Set dh to 0 if its not Equal
+            mov ah,0ah
+            mov dx,4456h
+            int 21h
+            jmp l6 
+        l5:
+        inc bx
+        cmp bx,6
+        jnz lab
+l6:
+ret
+endp strcmp 
+
+proc check_ca
+    mov dh,0
+    mov bl,44
+    mov bh,38
+    mov ah,ip[si]
+    inc si
+    cmp ax,bx
+    jne l7 
+    mov dh,1
+    l7:
+ret 
+endp check_ca
+    
+    
+    
+
+define_print_string
+end
+
+
+----------------------------------------------
+
+include emu8086.inc
+org 100h  
+mov ax,1
+mov dx,0
+mov cx,
+proc factorial
+    def:
+        mul cx
+        dec cx
+        jnz def
+    ret 
+endp factorial
+
+
+--------------------------------
+
+
+section	.text
+   global _start        ;must be declared for using gcc
+	
+_start:	                ;tell linker entry point
+   mov	ecx,'4'
+   sub     ecx, '0'
+	
+   mov 	edx, '5'
+   sub     edx, '0'
+	
+   call    sum          ;call sum procedure
+   mov 	[res], eax
+   mov	ecx, msg	
+   mov	edx, len
+   mov	ebx,1	        ;file descriptor (stdout)
+   mov	eax,4	        ;system call number (sys_write)
+   int	0x80	        ;call kernel
+	
+   mov	ecx, res
+   mov	edx, 1
+   mov	ebx, 1	        ;file descriptor (stdout)
+   mov	eax, 4	        ;system call number (sys_write)
+   int	0x80	        ;call kernel
+	
+   mov	eax,1	        ;system call number (sys_exit)
+   int	0x80	        ;call kernel
+sum:
+   mov     eax, ecx
+   add     eax, edx
+   add     eax, '0'
+   ret
+	
+section .data
+msg db "The sum is:", 0xA,0xD 
+len equ $- msg   
+
+segment .bss
+res resb 1
+
+
+    
+
+
+
+
