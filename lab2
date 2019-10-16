@@ -1,3 +1,42 @@
+
+
+mov si, 0
+mov dh, 0
+mov dl, 0
+
+menu:
+    mov ah, 00h
+    int 16h
+
+    cmp ah, 48h  ;Up Arrow key 
+    je up
+
+    cmp ah, 50h  ;Down Arrow key 
+    je down
+
+    cmp ah, 4Dh  ;Right Arrow key 
+    je right
+
+    cmp ah, 4Bh  ;Left Arrow key 
+    je left
+
+    jmp exit
+
+up:
+    mov ah, 3  ;Get current position
+    int 10h
+
+    mov ah, 2  ;Move cursor Up
+    sub dh, 1
+    int 10h
+
+    jmp menu
+
+down:
+    mov ah, 3  ;Get current position
+    int 10h
+
+==============
 include emu8086.inc 
 org 100h
 
